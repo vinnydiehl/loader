@@ -11,6 +11,5 @@
 *.la
 *.a
 
-# Build directories
-[Bb]in/
-[Oo]bj/
+# Compiled Test Program
+*.exe
