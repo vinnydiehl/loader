@@ -1,3 +1,5 @@
+import sys
+
 # Cross-platform terminal size
 
 def getTerminalSize():
@@ -17,7 +19,7 @@ def getTerminalSize():
    return tuple_xy
 
 def _getTerminalSize_windows():
-    res=None
+    res = None
     try:
         from ctypes import windll, create_string_buffer
 
@@ -82,7 +84,7 @@ def _getTerminalSize_linux():
 CWIDTH = getTerminalSize()[0]
 
 class Loader:
-    def __init__(displayProgress):
+    def __init__(self, displayProgress=True):
         self.progress = 0
         self.DisplayProgress = displayProgress
 
@@ -90,7 +92,7 @@ class Loader:
         self.DefaultLeft, self.DefaultRight = '[', ']'
         self.DefaultWhitespace = ' '
     
-    def Display(body='=', end='>', left='[', right=']', ws=' '):
+    def Display(self, body='=', end='>', left='[', right=']', ws=' '):
         '''
            Displays the loading bar. It will fill the entire console and look
            like the ones displayed below. | represents the ends of the console
@@ -110,45 +112,45 @@ class Loader:
              Whitespace: <Space>
         '''
 
-        builder = ''
-        maxBarLength = CWIDTH == 9 if DisplayProgress else CWIDTH - 3
+        builder = left
+        maxBarLength = CWIDTH - 9 if self.DisplayProgress else CWIDTH - 3
         
-        for i in range(maxBarLength * progress / 100):
+        for i in range(int(maxBarLength * self.progress / 100.0)):
             builder += body
         builder += end
         while len(builder) < maxBarLength + 2:
             builder += ws
         builder += right
 
-        if DisplayProgress:
-            if progress < 100:
+        if self.DisplayProgress:
+            if self.progress < 100:
                 builder += ' '
-            if progress < 10:
+            if self.progress < 10:
                 builder += ' '
-            builder += ' %d%%' % progress
+            builder += ' %d%%' % self.progress
 
             while len(builder) < CWIDTH:
                 builder += ' '
         
-        print builder
+        sys.stdout.write(builder)
 
-    def GetProgress():
-        return progress
-    def SetProgress(n):
-        progress = 0 if n < 0 else 100 if n > 100 else n
+    def GetProgress(self):
+        return self.progress
+    def SetProgress(self, n):
+        self.progress = 0 if n < 0 else 100 if n > 100 else n
 
-    def Finished():
-        return progress == 100;
+    def Finished(self):
+        return self.progress == 100;
 
-    def Increment(n):
-        added = progress + n
-        progress = 0 if added < 0 else 100 if added > 100 else added
-    def Decrement(n):
-        subtracted = progress + n
-        progress = 0 if subtracted < 0 else \
+    def Increment(self, n):
+        added = self.progress + n
+        self.progress = 0 if added < 0 else 100 if added > 100 else added
+    def Decrement(self, n):
+        subtracted = self.progress + n
+        self.progress = 0 if subtracted < 0 else \
                    100 if subtracted > 100 else subtracted
     
-    def Reset():
-        progress = 0
-    def Complete():
-        progress = 100
+    def Reset(self):
+        self.progress = 0
+    def Complete(self):
+        self.progress = 100
