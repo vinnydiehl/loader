@@ -93,7 +93,7 @@ void Loader::printOutput(char body, char end, char left, char right, char ws)
         builder << ' ' << (int)progress << '%';
         // More spaces to fill all the way to the end of the console line
         // (this should always be 1 space, but use a loop just in case)
-        while ((short)builder.str().length() < CWIDTH) builder <<' ';
+        while ((short)builder.str().length() < CWIDTH) builder << ' ';
     }
 
     cout << builder.str();
